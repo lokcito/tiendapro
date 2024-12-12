@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from tiendapp.models import Product, ProductCategory
 
 # Create your views here.
@@ -19,19 +19,17 @@ def v_cart(request):
 def v_product_detail(request, code):
     product_obj = Product.objects.get(sku = code)
 
-    # Obtener las categorias del producto
-    categories_obj = [c.category_id for c in ProductCategory
-                      .objects.filter(product = product_obj)]
+    rels = ProductCategory.objects.filter(product = product_obj)
+
+    # rels_ids, guarda los ids categoria del producto
+    rels_ids = [rr.category.id for rr in rels]
+    sug = ProductCategory.objects.filter(
+        category__in = rels_ids).exclude(product = product_obj)
     
-    # categories_obj almacena datos como:  [4 , 5, 6, 88]
-    # [4 , 5, 6, 88] estos numeros son los ids de las categorias
+    # sug, posee a las sugerencias, pero necesito los ids de los productos
+    sug_ids = [ss.product.id for ss in sug]
     
-    # De las categorias obtenidas
-    # Filtrar los productos relacionados
-    pc_obj = ProductCategory.objects.filter(category__id__in = categories_obj)
-    extras = []
-    for pc in pc_obj:
-        extras.append(pc.product)
+    extras = Product.objects.filter(id__in = sug_ids)
 
     context = {
         "product": product_obj,
@@ -45,3 +43,8 @@ def v_product_detail(request, code):
     # El return render , enlazando el html,  
     # tiendap/product_detail.html
     # Adicionar a la funcion render, contexto
+
+def v_add_to_cart(request, code):
+    # Algoritmos nuevos
+    # Procesar 
+    return redirect("/cart")
