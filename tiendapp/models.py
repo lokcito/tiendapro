@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -29,3 +30,55 @@ class ProductCategory(models.Model):
     
     def __str__(self):
         return self.category.name + " > " + self.product.name
+    
+class Customer(models.Model):
+    # USER tiene un CUSTOMER
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    billing_address = models.TextField()
+    shipping_address = models.TextField()
+    phone = models.CharField(max_length=64)
+
+    def __str__(self):
+        return self.user.username + " Telefono: " + self.phone
+    
+    def get_current_order(self):
+        # Verfica si cliente self, tiene una orden
+        nueva_order = Order.objects.filter(
+            customer = self,
+            status = "PENDIENTE").first()
+
+        # nueva_order si existe : Order
+        # nueva_order si no existe : None
+        
+        # si nueva_order NO es None, lo retornamos
+        if nueva_order is None:
+            # Si nueva_order is None, lo creamos
+            nueva_order = Order()
+            nueva_order.customer = self
+            nueva_order.shipping_address = self.shipping_address
+            nueva_order.status = "PENDIENTE"
+            nueva_order.save()
+        return nueva_order
+
+class Order(models.Model):
+    # CUSTOMER tiene muchas ORDERS
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, default=1)
+    shipping_address = models.TextField()
+    order_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=32) # PENDIENTE #PAGADO
+
+    def __str__(self):
+        return self.customer.user.username + " Estado Orden: " + self.status
+
+class OrderDetail(models.Model):
+    # ORDER tiene muchos ORDER DETAIL
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    # PRODUCT TIENE MUCHOAS ORDER  DETAIL
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    price = models.DecimalField(decimal_places=2, max_digits=6) #9999.12
+    quantity = models.DecimalField(decimal_places=2, max_digits=6) #9999.12
+    
+    def __str__(self):
+        return str(self.order.id) + " " + self.product.name
+
+ 
