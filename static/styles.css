@@ -12,3 +12,18 @@
 
 .d-flex .w-100 img {width: 100%;}
 .card a img {width: 100%;}
+
+.bg-dark {background-color: #003285;}
+.bg-light {background-color: #2A629A;}
+.bg-orange {background-color: #FF7F3E;}
+.bg-yellow {background-color: #FFDA78;}
+
+.bg-dark-i {background-color: #003285!important;}
+.bg-light-i {background-color: #2A629A!important;}
+.bg-orange-i {background-color: #FF7F3E!important;}
+.bg-yellow-i {background-color: #FFDA78!important;}
+
+.text-dark {color: #003285;}
+.text-light {color: #2A629A;}
+.text-orange {color: #FF7F3E;}
+.text-yellow {color: #FFDA78;}
