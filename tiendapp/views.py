@@ -1,9 +1,11 @@
 from django.shortcuts import redirect, render
 from tiendapp.models import Product, ProductCategory, Customer
 from tiendapp.models import OrderDetail, Order
-
+from django.contrib import messages
 # Create your views here.
 def v_index(request):
+    
+
     products_db = Product.objects.all()
     
     context = {
@@ -100,10 +102,40 @@ def v_checkout(request):
     customer = Customer.objects.get(user = request.user)
     current_order = customer.get_current_order()
     details = OrderDetail.objects.filter(order = current_order)
+    # details => QuerySet => Lista
+
+    total = 0 #=> entero
+    # item => OrderDetail
+    for item in details:
+        subtotal = item.price * item.quantity
+        total = total + subtotal
 
     context = {
         "items": details,
-        "total_order": 121212,
+        "total_order": total,
         "customer": customer
     }
     return render(request, "tiendapp/checkout.html", context)
+
+def v_checkout_end(request):
+    # Validar si request.method es POST
+    if request.method == "POST":
+        # Capturar al cliente en curso en la variable: customer_obj
+        customer_obj = Customer.objects.get(user = request.user)
+
+        # Capturar a la orden en curso del cliente en la variable: current_order
+        current_order = customer_obj.get_current_order()
+        
+        # Capturar la data que viene de la peticion POST ( .copy() )
+        data = request.POST.copy()
+
+        # Asignar la data["shipping_address"] al campo shipping_address 
+        # de la orden en curso: current_order
+        current_order.shipping_address = data["shipping_address"]
+        current_order.status = "PAGADO"
+        # Guardar la orden en curso => current_order.save()
+        current_order.save()
+
+        messages.success(request, "La orden se ha procesado correctamente.")
+        # Redireccionar a la url /
+        return redirect("/")
