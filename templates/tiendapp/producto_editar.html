@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<section>
+    <form action="/product_editar/{{ producto.sku }}" 
+        enctype="multipart/form-data"
+        method="post">
+        {% csrf_token %}
+        <div class="mb-2">
+            <label>Nombre: </label>
+            <input class="form-control" required  
+                type="text" name="name" value="{{ producto.name }}">
+        </div>
+        <div class="mb-2">
+            <label>Precio: </label>
+            <input class="form-control" required   
+                type="text" name="price" value="{{ producto.price }}">
+        </div>
+        <div class="mb-2">
+            <label>Peso: </label>
+            <input class="form-control"  required  
+                type="text" name="weight" value="{{ producto.weight }}">
+        </div>
+        <div class="mb-2">
+            <label>Descripcion: </label>
+            <textarea class="form-control"  required  
+                name="description">{{ producto.description }}</textarea>
+        </div>
+        <div class="mb-2">
+            <label>Imagen pequena: </label>
+            <input type="file" name="thumbnail"  required   />
+        </div>
+        <div class="mb-2">
+            <label>Imagen normal: </label>
+            <input type="file" name="image"  required   />
+        </div>
+        <div class="mb-2">
+            <label>Stock: </label>
+            <input class="form-control"  required  
+                type="text" name="stock" value="{{ producto.stock }}">
+        </div>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+    </form>
+</section>
+{% endblock %}

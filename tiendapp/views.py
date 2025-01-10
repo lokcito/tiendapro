@@ -139,3 +139,44 @@ def v_checkout_end(request):
         messages.success(request, "La orden se ha procesado correctamente.")
         # Redireccionar a la url /
         return redirect("/")
+
+def v_suma(request, n1, n2):
+    cc3 = request.GET.get("n3", "default3")
+    cc4 = request.GET.get("n4", "default4")
+
+    context = {
+        "numero_1": n1,
+        "numero_2": n2,
+        "param_3": cc3,
+        "param_4": cc4,
+        "resultado": int(n1) + int(n2)
+    }
+    return render(request, "tiendapp/suma.html", context)
+
+
+def v_product_editar(request, code):
+    if request.method == "POST":
+        product_existente = Product.objects.get(sku = code)
+
+        data = request.POST.copy()
+        product_existente.name = data["name"]
+        product_existente.price = data["price"]
+        product_existente.weight = data["weight"]
+        product_existente.description = data["description"]
+        product_existente.stock = data["stock"]
+        
+        if "thumbnail" in request.FILES:
+            product_existente.thumbnail = request.FILES["thumbnail"]
+        
+        if "image" in request.FILES:
+            product_existente.image = request.FILES["image"]
+
+        product_existente.save()
+        return redirect("/product/" + code)
+
+
+    pr = Product.objects.get(sku = code)
+    context = {
+        "producto": pr
+    }
+    return render(request, "tiendapp/producto_editar.html", context)
